@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body>
+    <h1>Test！！！！！！！！！！！！！</h1>
+    <!-- Description that content enclosed in form is sent to indicate.rb (cgi) -->
+
+    <% require 'pg' %>
+
+    <% connection = PG::connect(dbname: "goya") %>
+    <% connection.internal_encoding = "UTF-8" %>
+
+
+
+
+    <% consumption_result = connection.exec("select weight,give_for FROM crops WHERE  give_for!='自家消費';") %>
+    <% date = [] %>
+
+    <% consumption_result.each do |record|  %>
+      <%  date << "Size of bitter gourd: #{record["weight"]} &nbsp;&nbsp; Sold to: #{record["give_for"]}" "<br>" %>
+    <% end %>
+
+    <form action="goya.cgi" method="POST">
+      Press the button below to jump to the size of the bitter gourd and the information page of the buyer where transferee is not self-consumption<br><br>
+      <!-- Substitute the data you want to send for value -->
+      <!-- Make name = "goya" a mark of information -->
+      <input type="text" name="goya" value="<%= date.join(' ')%>">
+      <input type="submit" name="submit" >
+    </form>
+
+
+
+    <% quality_result = connection.exec("select weight,give_for FROM crops WHERE quality=false;") %>
+    <% date = [] %>
+
+    <% quality_result.each do |record|  %>
+      <%  date << "Size of bitter gourd: #{record["weight"]} &nbsp;&nbsp; Sold to: #{record["give_for"]}" "<br>" %>
+    <% end %>
+
+    <form action="goya.cgi" method="POST">
+      Press the button below to jump to the size of the bitter gourd and the information page of the buyer where quality is poor<br><br>
+      <!-- Substitute the data you want to send for value -->
+      <!-- Make name = "goya" a mark of information -->
+      <input type="text" name="goya" value="<%= date.join(' ')%>">
+      <input type="submit" name="submit" >
+    </form>
+
+
+
+
+
+
+
+
+    <form action='indicate.cgi' method='POST'>
+        Please enter the letters below<br><br>
+        <!-- Input information is sent as data by submit button -->
+        <!-- name = 'input' is the information to be sent to-->
+        <!-- type = "text" is to create a form that can be input -->
+        <input type="text" name='input'><br>
+        <input type="submit" name="submit">
+    </form>
+
+    <% result = connection.exec("select date, weight, give_for from crops;") %>
+    <% date = [] %>
+
+    <% result.each do |record| %>
+      <%  date << "Size of bitter gourd: #{record["weight"]} Sold to: #{record["give_for"]}" %>
+    <% end %>
+
+    <form action="goya.cgi" method="POST">
+       Press the button below to jump to the size of the bitter gourd and the information page of the buyer<br><br>
+       <!-- Substitute the data you want to send for value -->
+       <!-- Make name = "goya" a mark of information -->
+      <input type="text" name="goya" value="<%= date.join(' ') %>">
+      <input type="submit" name="submit" >
+    </form>
+</body>
+
+</html>
